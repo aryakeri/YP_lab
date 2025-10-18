@@ -1,6 +1,9 @@
 from functools import wraps
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4ab5704 (WIP)
 # 1) Декоратор логирования
 def logger(func):
     @wraps(func)
@@ -9,7 +12,10 @@ def logger(func):
         result = func(*args, **kwargs)
         print(f"Функция {func.__name__} вернула {result}")
         return result
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4ab5704 (WIP)
     return wrapper
 
 
@@ -18,18 +24,28 @@ def logger(func):
 def add(a, b):
     return a + b
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4ab5704 (WIP)
 @logger
 def divide(a, b):
     if b == 0:
         return "Деление на ноль запрещено"
     return a / b
 
+<<<<<<< HEAD
 
 @logger
 def greet(name):
     print(f"Привет, {name}!")
     # возвращает None
+=======
+@logger
+def greet(name):
+    print(f"Привет, {name}!")  # печать приветствия
+    # возвращает None — это тоже покажет logger
+>>>>>>> 4ab5704 (WIP)
 
 
 # 2) Декоратор доступа
@@ -38,7 +54,10 @@ def require_role(allowed_roles):
     allowed_roles: список ролей (например, ["admin", "manager"])
     Ожидается, что первая позиция в аргументах — это user-словарь с ключами 'name' и 'role'.
     """
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4ab5704 (WIP)
     def decorator(func):
         @wraps(func)
         def wrapper(user, *args, **kwargs):
@@ -48,9 +67,13 @@ def require_role(allowed_roles):
             else:
                 print(f"Доступ запрещён пользователю {user.get('name')}")
                 return None
+<<<<<<< HEAD
 
         return wrapper
 
+=======
+        return wrapper
+>>>>>>> 4ab5704 (WIP)
     return decorator
 
 
@@ -61,7 +84,10 @@ def delete_database(user):
     print(f"База данных удалена пользователем {user['name']}")
     return "OK"
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4ab5704 (WIP)
 @require_role(["admin", "manager"])
 @logger
 def view_stats(user):
@@ -76,6 +102,7 @@ if __name__ == "__main__":
     divide(5, 0)
     greet("Алексей")
 
+<<<<<<< HEAD
     print("\n" + "-" * 50 + "\n")
 
     # ----- Тесты декоратора доступа -----
@@ -87,10 +114,29 @@ if __name__ == "__main__":
     delete_database(admin)  # допустим
     delete_database(manager)  # запрещён
     delete_database(guest)  # запрещён
+=======
+    print("\n" + "-"*50 + "\n")
+
+    # ----- Тесты декоратора доступа -----
+    admin   = {"name": "Иван", "role": "admin"}
+    manager = {"name": "Мария", "role": "manager"}
+    guest   = {"name": "Гость", "role": "guest"}
+
+    # delete_database: только admin
+    delete_database(admin)    # допустим
+    delete_database(manager)  # запрещён
+    delete_database(guest)    # запрещён
+>>>>>>> 4ab5704 (WIP)
 
     print()
 
     # view_stats: admin и manager
+<<<<<<< HEAD
     view_stats(admin)  # допустим
     view_stats(manager)  # допустим
     view_stats(guest)  # запрещён
+=======
+    view_stats(admin)         # допустим
+    view_stats(manager)       # допустим
+    view_stats(guest)         # запрещён
+>>>>>>> 4ab5704 (WIP)
