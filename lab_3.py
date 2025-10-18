@@ -102,9 +102,9 @@ if __name__ == "__main__":
         print(number, end=" ")
     print()
 
-    initial_deposit = Decimal("100000.00")
-    annual_rate = Decimal("7.5")
-    deposit_years = 3
+    initial_deposit = Decimal("3000.23")
+    annual_rate = Decimal("16.5")
+    deposit_years = 2
     final_sum, profit = calculate_deposit(initial_deposit, annual_rate, deposit_years)
     print(f"Deposit result: итоговая сумма {final_sum} руб., прибыль {profit} руб.")
 
