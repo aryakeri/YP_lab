@@ -1,10 +1,12 @@
 """Implementations for Lab 3 assignments."""
 
+# i can use git
+
 from datetime import date, datetime
 from decimal import Decimal, getcontext
 from fractions import Fraction
 
-# Настройка точности для задач Decimal.
+# Настройка точности для задач Decimal
 getcontext().prec = 28
 
 # 1. List comprehension (простое преобразование)
