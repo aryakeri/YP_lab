@@ -84,6 +84,6 @@ if __name__ == "__main__":
     except TypeError as error:
         print(f"car1 + bike вызвало ошибку: {error}")
 
-    vehicles = [base_transport, car1, car2, bike]
-    for vehicle in vehicles:
+    vehicles_uniq = [base_transport, car1, car2, bike]
+    for vehicle in vehicles_uniq:
         vehicle.move()
