@@ -1,0 +1,90 @@
+"""Command handlers for the CLI."""
+
+from __future__ import annotations
+
+import sys
+from typing import Any, Dict
+
+from .generator import generate_password
+from . import storage, utils
+
+
+def handle_generate(args) -> int:
+    """Handle the `generate` sub-command."""
+    use_digits = args.use_digits
+    use_special = args.use_special
+    use_uppercase = args.use_uppercase
+    use_lowercase = args.use_lowercase
+
+    try:
+        password = generate_password(
+            args.length,
+            use_digits=use_digits,
+            use_special=use_special,
+            use_uppercase=use_uppercase,
+            use_lowercase=use_lowercase,
+        )
+    except ValueError as exc:
+        print(f"Ошибка: {exc}", file=sys.stderr)
+        return 1
+
+    print(password)
+
+    if args.save:
+        label = args.label or utils.default_label()
+        options = {
+            "digits": use_digits,
+            "special": use_special,
+            "uppercase": use_uppercase,
+            "lowercase": use_lowercase,
+        }
+        entry, path = storage.store_password(
+            password,
+            label=label,
+            length=args.length,
+            options=options,
+            storage_file=args.storage_file,
+        )
+        print(
+            "Хэш сохранён:",
+            f"label={entry['label']} file={path}"
+        )
+    return 0
+
+
+def handle_search(args) -> int:
+    """Handle the `search` sub-command."""
+    if args.password:
+        entries, path = storage.verify_password(
+            args.password,
+            label_query=args.label,
+            storage_file=args.storage_file,
+        )
+    else:
+        entries, path = storage.search_passwords(
+            label_query=args.label,
+            storage_file=args.storage_file,
+        )
+
+    if not entries:
+        print("Ничего не найдено")
+        return 0
+
+    for entry in entries:
+        _print_entry(entry, path)
+    return 0
+
+
+def _print_entry(entry: Dict[str, Any], path) -> None:
+    options = entry.get("options", {})
+    enabled = ", ".join([name for name, enabled in options.items() if enabled])
+    print(
+        f"label: {entry.get('label')}\n"
+        f"  hash: {entry.get('hash')}\n"
+        f"  length: {entry.get('length')}\n"
+        f"  options: {enabled or '—'}\n"
+        f"  created_at: {entry.get('created_at')}"
+    )
+
+
+__all__ = ["handle_generate", "handle_search"]

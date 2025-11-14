@@ -12,6 +12,7 @@ getcontext().prec = 28
 # 1. List comprehension (простое преобразование)
 squares = [number**2 for number in range(1, 11)]
 
+
 # 2. List comprehension (фильтрация)
 even_numbers = [number for number in range(1, 20) if number % 2 == 0]
 
