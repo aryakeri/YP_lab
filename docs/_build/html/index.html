@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+
+<html lang="ru" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>passgen — генератор паролей &#8212; документация passgen 0.1.0</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <script src="_static/documentation_options.js?v=6ff560e8"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/translations.js?v=cd1d70c9"></script>
+    <link rel="index" title="Алфавитный указатель" href="genindex.html" />
+    <link rel="search" title="Поиск" href="search.html" />
+    <link rel="next" title="Использование" href="usage.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="passgen">
+<h1>passgen — генератор паролей<a class="headerlink" href="#passgen" title="Ссылка на этот заголовок">¶</a></h1>
+<p>Добро пожаловать в документацию CLI‑утилиты <strong>passgen</strong>. Проект предоставляет
+консольный интерфейс для генерации и хранения безопасных паролей.</p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Содержание</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Использование</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#id2">Установка зависимостей</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#id3">Запуск приложения</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#html">Сборка HTML документации</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.html#passgen.main.build_parser"><code class="docutils literal notranslate"><span class="pre">build_parser()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#passgen.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#passgen.commands.handle_generate"><code class="docutils literal notranslate"><span class="pre">handle_generate()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#passgen.commands.handle_search"><code class="docutils literal notranslate"><span class="pre">handle_search()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#passgen.generator.generate_password"><code class="docutils literal notranslate"><span class="pre">generate_password()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#passgen.storage.resolve_storage_file"><code class="docutils literal notranslate"><span class="pre">resolve_storage_file()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#passgen.storage.search_passwords"><code class="docutils literal notranslate"><span class="pre">search_passwords()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#passgen.storage.store_password"><code class="docutils literal notranslate"><span class="pre">store_password()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#passgen.storage.verify_password"><code class="docutils literal notranslate"><span class="pre">verify_password()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#passgen.utils.build_charsets"><code class="docutils literal notranslate"><span class="pre">build_charsets()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#passgen.utils.current_timestamp"><code class="docutils literal notranslate"><span class="pre">current_timestamp()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#passgen.utils.default_label"><code class="docutils literal notranslate"><span class="pre">default_label()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#passgen.utils.hash_password"><code class="docutils literal notranslate"><span class="pre">hash_password()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#passgen.utils.validate_length"><code class="docutils literal notranslate"><span class="pre">validate_length()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">passgen</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Искать" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Навигация</h3>
+<p class="caption" role="heading"><span class="caption-text">Содержание</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Использование</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="usage.html" title="следующая глава">Использование</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, passgen CLI.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

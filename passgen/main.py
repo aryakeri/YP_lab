@@ -1,4 +1,21 @@
-"""Command-line entry point for the password generator."""
+"""
+Example:
+cd "/Users/aryakeri/Documents/university/5 SEMESTR/YAP/git/YP_lab"
+
+python3 -m passgen.main generate --length 16
+
+--length <n> — длина пароля (по умолчанию 16).
+--digits / --no-digits — включить/исключить цифры.
+--special / --no-special — включить/исключить спецсимволы.
+--uppercase / --no-uppercase — включить/исключить заглавные.
+--lowercase / --no-lowercase — включить/исключить строчные.
+--label <строка> — явная метка для сохранения.
+--storage-file <путь> — свой JSON вместо
+
+cd git/YP_lab && python3 -m unittest discover -s tests -p 'test_*.py'
+
+python3 -m unittest discover -s tests -p 'test_*.py'
+"""
 
 from __future__ import annotations
 
@@ -18,6 +35,11 @@ except ImportError:  # Executed directly: enable absolute import
 
 
 def build_parser() -> argparse.ArgumentParser:
+    """Создать и вернуть корневой парсер аргументов.
+
+    Returns:
+        argparse.ArgumentParser: Готовый парсер с подкомандами generate/search.
+    """
     parser = argparse.ArgumentParser(
         prog="passgen",
         description="Утилита для генерации безопасных паролей",
@@ -30,6 +52,11 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def _build_generate_subcommand(subparsers: argparse._SubParsersAction) -> None:
+    """Добавить подкоманду `generate` к парсеру.
+
+    Args:
+        subparsers (argparse._SubParsersAction): Коллекция подкоманд, созданная парсером.
+    """
     generate = subparsers.add_parser(
         "generate",
         help="Сгенерировать новый пароль",
@@ -89,6 +116,11 @@ def _build_generate_subcommand(subparsers: argparse._SubParsersAction) -> None:
 
 
 def _build_search_subcommand(subparsers: argparse._SubParsersAction) -> None:
+    """Добавить подкоманду `search` к парсеру.
+
+    Args:
+        subparsers (argparse._SubParsersAction): Коллекция подкоманд, созданная парсером.
+    """
     search = subparsers.add_parser(
         "search",
         help="Поиск/проверка сохранённых паролей",
@@ -117,12 +149,32 @@ def _add_boolean_pair(
     enable_help: str,
     disable_help: str,
 ) -> None:
+    """Добавить пару флагов вида --<name> / --no-<name> к парсеру.
+
+    Args:
+        parser (argparse.ArgumentParser): Активный парсер подкоманды.
+        name (str): Базовое имя для флагов.
+        dest (str): Имя атрибута, в который будет записан результат.
+        default (bool): Значение по умолчанию.
+        enable_help (str): Текст помощи для включающего флага.
+        disable_help (str): Текст помощи для выключающего флага.
+    """
     parser.add_argument(f"--{name}", dest=dest, action="store_true", help=enable_help)
-    parser.add_argument(f"--no-{name}", dest=dest, action="store_false", help=disable_help)
+    parser.add_argument(
+        f"--no-{name}", dest=dest, action="store_false", help=disable_help
+    )
     parser.set_defaults(**{dest: default})
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
+    """Точка входа CLI.
+
+    Args:
+        argv (Optional[Sequence[str]]): Список аргументов, по умолчанию sys.argv.
+
+    Returns:
+        int: Код возврата подкоманды или 1 при отсутствии команды.
+    """
     parser = build_parser()
     args = parser.parse_args(argv)
     if not hasattr(args, "func"):

@@ -12,13 +12,31 @@ DEFAULT_STORAGE_FILE = Path(__file__).resolve().parent / "passwords.json"
 
 
 def resolve_storage_file(storage_file: str | None) -> Path:
-    """Return the file that should be used for persisting passwords."""
+    """Определить файл для хранения паролей.
+
+    Args:
+        storage_file (str | None): Пользовательский путь или None для значения по умолчанию.
+
+    Returns:
+        Path: Абсолютный путь к файлу хранения.
+    """
     if storage_file:
         return Path(storage_file).expanduser().resolve()
     return DEFAULT_STORAGE_FILE
 
 
 def _load_entries(path: Path) -> List[Dict[str, object]]:
+    """Прочитать записи из JSON файла.
+
+    Args:
+        path (Path): Путь к файлу.
+
+    Returns:
+        List[Dict[str, object]]: Список записей или пустой список, если файла нет.
+
+    Raises:
+        ValueError: При повреждённом JSON или неверной структуре.
+    """
     if not path.exists():
         return []
     with path.open("r", encoding="utf-8") as handle:
@@ -32,6 +50,12 @@ def _load_entries(path: Path) -> List[Dict[str, object]]:
 
 
 def _write_entries(path: Path, entries: Iterable[Dict[str, object]]) -> None:
+    """Записать список записей в файл.
+
+    Args:
+        path (Path): Путь к файлу.
+        entries (Iterable[Dict[str, object]]): Коллекция записей для сохранения.
+    """
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as handle:
         json.dump(list(entries), handle, indent=2)
@@ -45,7 +69,18 @@ def store_password(
     options: Dict[str, bool],
     storage_file: str | None = None,
 ) -> Tuple[Dict[str, object], Path]:
-    """Persist a hashed version of the password alongside metadata."""
+    """Сохранить хэш пароля с метаданными.
+
+    Args:
+        password (str): Пароль в открытом виде.
+        label (str): Метка записи.
+        length (int): Длина сгенерированного пароля.
+        options (Dict[str, bool]): Использованные опции генерации.
+        storage_file (str | None): Кастомный путь к файлу хранения.
+
+    Returns:
+        Tuple[Dict[str, object], Path]: Созданная запись и путь к файлу.
+    """
     path = resolve_storage_file(storage_file)
     entries = _load_entries(path)
     entry = {
@@ -65,7 +100,15 @@ def search_passwords(
     label_query: str | None = None,
     storage_file: str | None = None,
 ) -> Tuple[List[Dict[str, object]], Path]:
-    """Return stored entries filtered by an optional label query."""
+    """Найти записи по метке.
+
+    Args:
+        label_query (str | None): Подстрока для поиска в метке.
+        storage_file (str | None): Файл хранения.
+
+    Returns:
+        Tuple[List[Dict[str, object]], Path]: Отфильтрованные записи и путь к файлу.
+    """
     path = resolve_storage_file(storage_file)
     entries = _load_entries(path)
     if label_query:
@@ -80,7 +123,16 @@ def verify_password(
     label_query: str | None = None,
     storage_file: str | None = None,
 ) -> Tuple[List[Dict[str, object]], Path]:
-    """Return entries that match the provided plaintext password."""
+    """Проверить наличие пароля по его хэшу.
+
+    Args:
+        password (str): Проверяемый пароль в открытом виде.
+        label_query (str | None): Необязательный фильтр по метке.
+        storage_file (str | None): Файл хранения.
+
+    Returns:
+        Tuple[List[Dict[str, object]], Path]: Совпадающие записи и путь к файлу.
+    """
     target_hash = utils.hash_password(password)
     entries, path = search_passwords(label_query=label_query, storage_file=storage_file)
     matches = [entry for entry in entries if entry.get("hash") == target_hash]

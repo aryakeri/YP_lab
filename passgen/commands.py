@@ -10,7 +10,14 @@ from . import storage, utils
 
 
 def handle_generate(args) -> int:
-    """Handle the `generate` sub-command."""
+    """Обработчик подкоманды `generate`.
+
+    Args:
+        args: Пространство имён argparse с аргументами подкоманды.
+
+    Returns:
+        int: Код возврата 0 при успехе или 1 при ошибке валидации.
+    """
     use_digits = args.use_digits
     use_special = args.use_special
     use_uppercase = args.use_uppercase
@@ -53,7 +60,14 @@ def handle_generate(args) -> int:
 
 
 def handle_search(args) -> int:
-    """Handle the `search` sub-command."""
+    """Обработчик подкоманды `search`.
+
+    Args:
+        args: Пространство имён argparse с аргументами подкоманды.
+
+    Returns:
+        int: Код возврата подкоманды, всегда 0.
+    """
     if args.password:
         entries, path = storage.verify_password(
             args.password,
@@ -76,6 +90,12 @@ def handle_search(args) -> int:
 
 
 def _print_entry(entry: Dict[str, Any], path) -> None:
+    """Вывести одну запись на stdout.
+
+    Args:
+        entry (Dict[str, Any]): Словарь с полями сохранённого пароля.
+        path (Path): Файл, из которого была прочитана запись.
+    """
     options = entry.get("options", {})
     enabled = ", ".join([name for name, enabled in options.items() if enabled])
     print(

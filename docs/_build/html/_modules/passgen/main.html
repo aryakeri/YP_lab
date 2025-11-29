@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+
+<html lang="ru" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>passgen.main &#8212; документация passgen 0.1.0</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../_static/documentation_options.js?v=6ff560e8"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/translations.js?v=cd1d70c9"></script>
+    <link rel="index" title="Алфавитный указатель" href="../../genindex.html" />
+    <link rel="search" title="Поиск" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Исходный код passgen.main</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Example:</span>
+<span class="sd">cd &quot;/Users/aryakeri/Documents/university/5 SEMESTR/YAP/git/YP_lab&quot;</span>
+
+<span class="sd">python3 -m passgen.main generate --length 16</span>
+
+<span class="sd">--length &lt;n&gt; — длина пароля (по умолчанию 16).</span>
+<span class="sd">--digits / --no-digits — включить/исключить цифры.</span>
+<span class="sd">--special / --no-special — включить/исключить спецсимволы.</span>
+<span class="sd">--uppercase / --no-uppercase — включить/исключить заглавные.</span>
+<span class="sd">--lowercase / --no-lowercase — включить/исключить строчные.</span>
+<span class="sd">--label &lt;строка&gt; — явная метка для сохранения.</span>
+<span class="sd">--storage-file &lt;путь&gt; — свой JSON вместо</span>
+
+<span class="sd">cd git/YP_lab &amp;&amp; python3 -m unittest discover -s tests -p &#39;test_*.py&#39;</span>
+
+<span class="sd">python3 -m unittest discover -s tests -p &#39;test_*.py&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span>
+
+<span class="k">try</span><span class="p">:</span>  <span class="c1"># pragma: no cover - fallback only used when run as a script</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">commands</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>  <span class="c1"># Executed directly: enable absolute import</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+    <span class="n">ROOT</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">ROOT</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">ROOT</span><span class="p">))</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">passgen</span><span class="w"> </span><span class="kn">import</span> <span class="n">commands</span>
+
+
+<div class="viewcode-block" id="build_parser">
+<a class="viewcode-back" href="../../api.html#passgen.main.build_parser">[документация]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_parser</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Создать и вернуть корневой парсер аргументов.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        argparse.ArgumentParser: Готовый парсер с подкомандами generate/search.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">prog</span><span class="o">=</span><span class="s2">&quot;passgen&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Утилита для генерации безопасных паролей&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">subparsers</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_subparsers</span><span class="p">(</span><span class="n">dest</span><span class="o">=</span><span class="s2">&quot;command&quot;</span><span class="p">)</span>
+
+    <span class="n">_build_generate_subcommand</span><span class="p">(</span><span class="n">subparsers</span><span class="p">)</span>
+    <span class="n">_build_search_subcommand</span><span class="p">(</span><span class="n">subparsers</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">parser</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_build_generate_subcommand</span><span class="p">(</span><span class="n">subparsers</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">_SubParsersAction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Добавить подкоманду `generate` к парсеру.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        subparsers (argparse._SubParsersAction): Коллекция подкоманд, созданная парсером.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">generate</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s2">&quot;generate&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Сгенерировать новый пароль&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">generate</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--length&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Длина пароля (по умолчанию 16)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">_add_boolean_pair</span><span class="p">(</span>
+        <span class="n">generate</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;digits&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;use_digits&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">enable_help</span><span class="o">=</span><span class="s2">&quot;Использовать цифры&quot;</span><span class="p">,</span>
+        <span class="n">disable_help</span><span class="o">=</span><span class="s2">&quot;Не использовать цифры&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">_add_boolean_pair</span><span class="p">(</span>
+        <span class="n">generate</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;special&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;use_special&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">enable_help</span><span class="o">=</span><span class="s2">&quot;Использовать спецсимволы&quot;</span><span class="p">,</span>
+        <span class="n">disable_help</span><span class="o">=</span><span class="s2">&quot;Не использовать спецсимволы&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">_add_boolean_pair</span><span class="p">(</span>
+        <span class="n">generate</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;uppercase&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;use_uppercase&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">enable_help</span><span class="o">=</span><span class="s2">&quot;Использовать заглавные буквы&quot;</span><span class="p">,</span>
+        <span class="n">disable_help</span><span class="o">=</span><span class="s2">&quot;Не использовать заглавные буквы&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">_add_boolean_pair</span><span class="p">(</span>
+        <span class="n">generate</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;lowercase&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;use_lowercase&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">enable_help</span><span class="o">=</span><span class="s2">&quot;Использовать строчные буквы&quot;</span><span class="p">,</span>
+        <span class="n">disable_help</span><span class="o">=</span><span class="s2">&quot;Не использовать строчные буквы&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">generate</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--save&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Сохранить хэш пароля в файл&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">generate</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--label&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Метка для сохранённого пароля&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">generate</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--storage-file&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Путь к файлу для сохранения (по умолчанию passgen/passwords.json)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">generate</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">commands</span><span class="o">.</span><span class="n">handle_generate</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_build_search_subcommand</span><span class="p">(</span><span class="n">subparsers</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">_SubParsersAction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Добавить подкоманду `search` к парсеру.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        subparsers (argparse._SubParsersAction): Коллекция подкоманд, созданная парсером.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">search</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s2">&quot;search&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Поиск/проверка сохранённых паролей&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">search</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--label&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Часть метки для фильтра&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">search</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--password&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Проверить, существует ли такой пароль (сравнение по хэшу)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">search</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--storage-file&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Путь к файлу хранения&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">search</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">commands</span><span class="o">.</span><span class="n">handle_search</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_add_boolean_pair</span><span class="p">(</span>
+    <span class="n">parser</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">dest</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">default</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">enable_help</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">disable_help</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Добавить пару флагов вида --&lt;name&gt; / --no-&lt;name&gt; к парсеру.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        parser (argparse.ArgumentParser): Активный парсер подкоманды.</span>
+<span class="sd">        name (str): Базовое имя для флагов.</span>
+<span class="sd">        dest (str): Имя атрибута, в который будет записан результат.</span>
+<span class="sd">        default (bool): Значение по умолчанию.</span>
+<span class="sd">        enable_help (str): Текст помощи для включающего флага.</span>
+<span class="sd">        disable_help (str): Текст помощи для выключающего флага.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;--</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="n">dest</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">enable_help</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;--no-</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="n">dest</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_false&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">disable_help</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">dest</span><span class="p">:</span> <span class="n">default</span><span class="p">})</span>
+
+
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../../api.html#passgen.main.main">[документация]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">argv</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Точка входа CLI.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        argv (Optional[Sequence[str]]): Список аргументов, по умолчанию sys.argv.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        int: Код возврата подкоманды или 1 при отсутствии команды.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">build_parser</span><span class="p">()</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s2">&quot;func&quot;</span><span class="p">):</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">print_help</span><span class="p">()</span>
+        <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">args</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="n">args</span><span class="p">)</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+    <span class="k">raise</span> <span class="ne">SystemExit</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">passgen</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Искать" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Навигация</h3>
+<p class="caption" role="heading"><span class="caption-text">Содержание</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Использование</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Код модуля</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, passgen CLI.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -17,7 +17,20 @@ def build_charsets(
     include_digits: bool,
     include_special: bool,
 ) -> List[str]:
-    """Return the list of active character pools."""
+    """Вернуть список включённых наборов символов.
+
+    Args:
+        include_lower (bool): Добавить строчные буквы.
+        include_upper (bool): Добавить заглавные буквы.
+        include_digits (bool): Добавить цифры.
+        include_special (bool): Добавить спецсимволы.
+
+    Returns:
+        List[str]: Список строковых наборов символов.
+
+    Raises:
+        ValueError: Если ни один набор не активен.
+    """
     charsets: List[str] = []
     if include_lower:
         charsets.append(string.ascii_lowercase)
@@ -34,7 +47,18 @@ def build_charsets(
 
 
 def validate_length(length: int, *, min_required: int = 1) -> int:
-    """Validate the requested password length."""
+    """Проверить корректность заданной длины.
+
+    Args:
+        length (int): Запрошенная длина пароля.
+        min_required (int): Минимум символов, исходя из числа наборов.
+
+    Returns:
+        int: Подтверждённая длина.
+
+    Raises:
+        ValueError: Если длина меньше требуемого минимума.
+    """
     if length < min_required:
         raise ValueError(
             f"Length must be at least {min_required} when {min_required} charsets are selected"
@@ -43,19 +67,31 @@ def validate_length(length: int, *, min_required: int = 1) -> int:
 
 
 def hash_password(password: str, *, algorithm: str = "sha256") -> str:
-    """Return a secure hash of the password for storing on disk."""
+    """Посчитать безопасный хэш пароля.
+
+    Args:
+        password (str): Пароль в открытом виде.
+        algorithm (str): Алгоритм для hashlib.new.
+
+    Returns:
+        str: Hex-дigest хэша.
+    """
     digest = hashlib.new(algorithm)
     digest.update(password.encode("utf-8"))
     return digest.hexdigest()
 
 
 def current_timestamp() -> str:
-    """Return an ISO-8601 timestamp in UTC."""
+    """Получить отметку времени в формате ISO-8601 (UTC)."""
     return datetime.now(tz=timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
 def default_label() -> str:
-    """Generate a default label when the user did not provide one."""
+    """Сформировать метку по умолчанию.
+
+    Returns:
+        str: Строка вида `entry-<timestamp>`.
+    """
     return f"entry-{current_timestamp()}"
 
 

@@ -16,7 +16,21 @@ def generate_password(
     use_uppercase: bool = True,
     use_lowercase: bool = True,
 ) -> str:
-    """Generate a password that satisfies the requested options."""
+    """Сгенерировать пароль с учётом выбранных опций.
+
+    Args:
+        length (int): Требуемая длина пароля.
+        use_digits (bool): Включать цифры.
+        use_special (bool): Включать спецсимволы.
+        use_uppercase (bool): Включать заглавные буквы.
+        use_lowercase (bool): Включать строчные буквы.
+
+    Returns:
+        str: Случайный пароль требуемой длины.
+
+    Raises:
+        ValueError: Если длина меньше количества выбранных наборов символов.
+    """
     charsets: List[str] = utils.build_charsets(
         include_lower=use_lowercase,
         include_upper=use_uppercase,
