@@ -21,6 +21,11 @@ API
    :undoc-members:
    :show-inheritance:
 
+.. automodule:: passgen.storage_pg
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 .. automodule:: passgen.utils
    :members:
    :undoc-members:

@@ -45,13 +45,24 @@ def handle_generate(args) -> int:
             "uppercase": use_uppercase,
             "lowercase": use_lowercase,
         }
-        entry, path = storage.store_password(
-            password,
-            label=label,
-            length=args.length,
-            options=options,
-            storage_file=args.storage_file,
-        )
+        if getattr(args, "storage_dsn", None):
+            from . import storage_pg
+
+            entry, path = storage_pg.store_password_postgres(
+                password,
+                label=label,
+                length=args.length,
+                options=options,
+                dsn=args.storage_dsn,
+            )
+        else:
+            entry, path = storage.store_password(
+                password,
+                label=label,
+                length=args.length,
+                options=options,
+                storage_file=args.storage_file,
+            )
         print(
             "Хэш сохранён:",
             f"label={entry['label']} file={path}"
@@ -68,17 +79,35 @@ def handle_search(args) -> int:
     Returns:
         int: Код возврата подкоманды, всегда 0.
     """
+    use_pg = getattr(args, "storage_dsn", None)
     if args.password:
-        entries, path = storage.verify_password(
-            args.password,
-            label_query=args.label,
-            storage_file=args.storage_file,
-        )
+        if use_pg:
+            from . import storage_pg
+
+            entries, path = storage_pg.verify_password_postgres(
+                args.password,
+                label_query=args.label,
+                dsn=use_pg,
+            )
+        else:
+            entries, path = storage.verify_password(
+                args.password,
+                label_query=args.label,
+                storage_file=args.storage_file,
+            )
     else:
-        entries, path = storage.search_passwords(
-            label_query=args.label,
-            storage_file=args.storage_file,
-        )
+        if use_pg:
+            from . import storage_pg
+
+            entries, path = storage_pg.search_passwords_postgres(
+                label_query=args.label,
+                dsn=use_pg,
+            )
+        else:
+            entries, path = storage.search_passwords(
+                label_query=args.label,
+                storage_file=args.storage_file,
+            )
 
     if not entries:
         print("Ничего не найдено")

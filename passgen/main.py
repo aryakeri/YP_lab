@@ -11,10 +11,17 @@ python3 -m passgen.main generate --length 16
 --lowercase / --no-lowercase — включить/исключить строчные.
 --label <строка> — явная метка для сохранения.
 --storage-file <путь> — свой JSON вместо
+--storage-dsn - сохранение в БД
 
 cd git/YP_lab && python3 -m unittest discover -s tests -p 'test_*.py'
 
 python3 -m unittest discover -s tests -p 'test_*.py'
+
+Сохранение в БД
+python3 -m passgen.main generate --length 12 --save --storage-dsn "$PASSGEN_DSN" --label megatest
+
+Поиск в
+python3 -m passgen.main generate --length 12 --save --storage-dsn "$PASSGEN_DSN" --label megatest
 """
 
 from __future__ import annotations
@@ -22,9 +29,9 @@ from __future__ import annotations
 import argparse
 from typing import Optional, Sequence
 
-try:  # pragma: no cover - fallback only used when run as a script
+try:
     from . import commands
-except ImportError:  # Executed directly: enable absolute import
+except ImportError:
     import sys
     from pathlib import Path
 
@@ -35,11 +42,6 @@ except ImportError:  # Executed directly: enable absolute import
 
 
 def build_parser() -> argparse.ArgumentParser:
-    """Создать и вернуть корневой парсер аргументов.
-
-    Returns:
-        argparse.ArgumentParser: Готовый парсер с подкомандами generate/search.
-    """
     parser = argparse.ArgumentParser(
         prog="passgen",
         description="Утилита для генерации безопасных паролей",
@@ -112,6 +114,10 @@ def _build_generate_subcommand(subparsers: argparse._SubParsersAction) -> None:
         "--storage-file",
         help="Путь к файлу для сохранения (по умолчанию passgen/passwords.json)",
     )
+    generate.add_argument(
+        "--storage-dsn",
+        help="Строка подключения PostgreSQL (альтернатива файлу JSON)",
+    )
     generate.set_defaults(func=commands.handle_generate)
 
 
@@ -136,6 +142,10 @@ def _build_search_subcommand(subparsers: argparse._SubParsersAction) -> None:
     search.add_argument(
         "--storage-file",
         help="Путь к файлу хранения",
+    )
+    search.add_argument(
+        "--storage-dsn",
+        help="Строка подключения PostgreSQL (альтернатива файлу JSON)",
     )
     search.set_defaults(func=commands.handle_search)
 

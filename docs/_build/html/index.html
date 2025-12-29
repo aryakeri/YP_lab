@@ -9,6 +9,7 @@
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
     <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=2e6f85c8" />
     <script src="_static/documentation_options.js?v=6ff560e8"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
@@ -36,13 +37,15 @@
   <section id="passgen">
 <h1>passgen — генератор паролей<a class="headerlink" href="#passgen" title="Ссылка на этот заголовок">¶</a></h1>
 <p>Добро пожаловать в документацию CLI‑утилиты <strong>passgen</strong>. Проект предоставляет
-консольный интерфейс для генерации и хранения безопасных паролей.</p>
+консольный интерфейс для генерации и хранения безопасных паролей. Поддерживаются
+два варианта хранения: простой JSON-файл и PostgreSQL.</p>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Содержание</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Использование</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="usage.html#id2">Установка зависимостей</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage.html#id3">Запуск приложения</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#postgresql">Сохранение в PostgreSQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage.html#html">Сборка HTML документации</a></li>
 </ul>
 </li>
@@ -56,6 +59,9 @@
 <li class="toctree-l2"><a class="reference internal" href="api.html#passgen.storage.search_passwords"><code class="docutils literal notranslate"><span class="pre">search_passwords()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="api.html#passgen.storage.store_password"><code class="docutils literal notranslate"><span class="pre">store_password()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="api.html#passgen.storage.verify_password"><code class="docutils literal notranslate"><span class="pre">verify_password()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#passgen.storage_pg.search_passwords_postgres"><code class="docutils literal notranslate"><span class="pre">search_passwords_postgres()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#passgen.storage_pg.store_password_postgres"><code class="docutils literal notranslate"><span class="pre">store_password_postgres()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#passgen.storage_pg.verify_password_postgres"><code class="docutils literal notranslate"><span class="pre">verify_password_postgres()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="api.html#passgen.utils.build_charsets"><code class="docutils literal notranslate"><span class="pre">build_charsets()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="api.html#passgen.utils.current_timestamp"><code class="docutils literal notranslate"><span class="pre">current_timestamp()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="api.html#passgen.utils.default_label"><code class="docutils literal notranslate"><span class="pre">default_label()</span></code></a></li>

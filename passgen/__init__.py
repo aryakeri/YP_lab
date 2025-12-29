@@ -4,5 +4,6 @@ __all__ = [
     "generator",
     "utils",
     "storage",
+    "storage_pg",
     "commands",
 ]
